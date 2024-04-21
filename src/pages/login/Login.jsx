@@ -1,33 +1,57 @@
 import { useContext, useState } from "react";
 import "./login.scss";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase"// Assurez-vous d'importer la référence à votre instance de base de données
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext"
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
   const [error, setError] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Correction de la variable navigate
 
-  const navitage = useNavigate()
+  const { dispatch } = useContext(AuthContext);
 
-  const { dispatch } = useContext(AuthContext)
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+  
+    try {
+      // Authentification de l'utilisateur
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      // Récupérer les données de l'utilisateur depuis le backend
+      const response = await fetch(`http://localhost:3000/admin/users/${user.uid}`);
+      const userData = await response.json();
+  const id=userData.id;
+      console.log("Données utilisateur :", userData);
+      dispatch({ type: "LOGIN_SUCCESS", payload: { user: userData, userId: id } });
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        dispatch({ type: "LOGIN", payload: user })
-        navitage("/")
-      })
-      .catch((error) => {
-        setError(true);
-      });
+      // Vérifier si l'utilisateur existe et a un rôle
+      if (userData && userData.role) {
+        const role = userData.role;
+        console.log("Rôle de l'utilisateur :", role);
+        // Rediriger l'utilisateur en fonction de son rôle
+        if (role === "admin") {
+          navigate("/template");
+        } else if (role === "prof") {
+          navigate(`/profile/${id}`);
+        } else if (role === "etudiant") {
+          navigate("/profile");
+        } else {
+          navigate("/dash");
+        }
+      } else {
+        setError("Le rôle de l'utilisateur n'a pas été trouvé");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion :", error);
+      setError(true);
+    }
   };
+  
+  
 
   return (
     <div style={{
@@ -75,7 +99,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

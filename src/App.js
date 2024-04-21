@@ -13,10 +13,17 @@ import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
 import AdminWork from "./pages/admin/AdminWork"
+import Prof from "./pages/prof/Prof"
+import Courses from "./pages/prof/course/Courses"
+import Profile from "./pages/prof/profile/Profile"
+import DashboardProf from './pages/prof/dashboard/Home'
+import Details  from './pages/prof/course/Details';
+import Notification from './pages/prof/course/Notification';
 function App() {
   const { darkMode } = useContext(DarkModeContext);
+  const { currentUser, userId } = useContext(AuthContext); // Utilisez userId ici
 
-  const {currentUser} = useContext(AuthContext)
+  console.log("id",userId)
 
   const RequireAuth = ({ children }) => {
     return currentUser ? children : <Navigate to="/login" />;
@@ -115,6 +122,17 @@ function App() {
                 }
               />
             </Route>
+            <Route path="prof" index
+                element={
+                  <RequireAuth>
+<Prof />                  </RequireAuth>
+                } />
+            <Route path="/courses/:userId" element={
+                  <RequireAuth><Courses /></RequireAuth>} />
+            <Route path="/profile/:userId" element={<Profile />} />
+            <Route path="/dash/:userId" element={<DashboardProf />} />
+            <Route path="/notif/:userId" element={<Notification />} />
+            <Route path="/details/:elementModuleId" element={<Details />} />
           </Route>
         </Routes>
       </BrowserRouter>
