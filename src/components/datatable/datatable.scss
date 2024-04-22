@@ -21,7 +21,42 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    
   }
+  .dtaa {
+    /* Your CSS styles for the datatableTitle class */
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.dtaa form {
+    /* Your CSS styles for the form inside datatableTitle */
+    margin-top: 10px;
+}
+
+.dtaa input[type="file"] {
+    /* Your CSS styles for the input file element inside datatableTitle */
+    margin-right: 10px;
+}
+
+.dtaa select {
+    /* Your CSS styles for the select element inside datatableTitle */
+    margin-right: 10px;
+}
+
+.dtaa button {
+    /* Your CSS styles for the button element inside datatableTitle */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.dtaa button:hover {
+    background-color: #0056b3;
+}
 
   .cellWithImg {
     display: flex;

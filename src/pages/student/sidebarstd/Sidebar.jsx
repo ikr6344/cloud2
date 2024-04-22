@@ -15,16 +15,14 @@ import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSyst
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Link } from "react-router-dom";
-import { DarkModeContext } from "../../context/darkModeContext";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { DarkModeContext } from "../../../context/darkModeContext";
+import { useContext ,useState, useEffect } from "react";
+import { AuthContext } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
-import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
-import BookOutlinedIcon from '@mui/icons-material/BookOutlined';
-const Sidebar = () => {
+import axios from 'axios';
+
+const Sidebar = ({ etudiantId }) => {
   const { dispatch: authDispatch } = useContext(AuthContext); // Use 'authDispatch' here
   const { dispatch: darkModeDispatch } = useContext(DarkModeContext); // Use 'darkModeDispatch' here
   const navigate = useNavigate();
@@ -33,79 +31,72 @@ const Sidebar = () => {
     authDispatch({ type: "LOGOUT" });
     navigate('/login'); // Navigate to the login page after logout
   };
+  
+    const [etudiant, setEtudiant] = useState({
+      nom: '',
+      prenom: '',
+      email: '',
+      photo: ''
+    });
+  
+    useEffect(() => {
+      const fetchEtudiantData = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3001/etudiant/uUBjjJQoN6b0U76OLaHhc6qxLxv2`);
+          setEtudiant(response.data);
+        } catch (error) {
+          console.error('Erreur lors de la récupération des données de l\'étudiant :', error);
+        }
+      };
+  
+      fetchEtudiantData();
+    }, [etudiantId]);
+  
   return (
     <div className="sidebar">
       <div className="top">
         <img src="https://cdn-icons-png.flaticon.com/512/8289/8289722.png" alt="Logo" className="logoImg" />
         <span className="logo">Note</span>
       </div>
-
       <hr />
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
-          <li>
-            <Link to="/" style={{ textDecoration: "none" }}>
-              <DashboardIcon className="icon" />
-              <span>Dashboard</span>
-            </Link>
-          </li>
+          
           <p className="title">LISTS</p>
-          <Link to="/profs" style={{ textDecoration: "none" }}>
+          <Link to="/student" style={{ textDecoration: "none" }}>
+          <li>
+            <DashboardIcon className="icon" />
+            <span>Dashboard</span>
+          </li>
+          </Link>
+          <Link to="/profile" style={{ textDecoration: "none" }}>
             <li>
               <PersonOutlineIcon className="icon" />
-              <span>Teachers</span>
+              <span>Profile</span>
             </li>
           </Link>
-          <Link to="/students" style={{ textDecoration: "none" }}>
+          <p className="title">USEFUL</p>
+          <Link to="/notes" style={{ textDecoration: "none" }}>
+
+          <li>
+            <InsertChartIcon className="icon" />
+            <span>Notes</span>
+          </li>
+          </Link>
+          <Link to="/devoir" style={{ textDecoration: "none" }}>
             <li>
               <SchoolOutlinedIcon className="icon" />
-              <span>Students</span>
+              <span>Devoir</span>
             </li>
           </Link>
-          <Link to="/fields" style={{ textDecoration: "none" }}>
-            <li>
-              <CategoryOutlinedIcon className="icon" />
-              <span>Fields</span>
-            </li>
-          </Link>
-          <Link to="/notes" style={{ textDecoration: "none" }}>
-            <li>
-              <AssessmentOutlinedIcon className="icon" />
-              <span>Marks</span>
-            </li>
-          </Link>
-          <Link to="/template" style={{ textDecoration: "none" }}>
-            <li>
-              <DescriptionOutlinedIcon className="icon" />
-              <span>Template</span>
-            </li>
-          </Link>
-          <Link to="/module" style={{ textDecoration: "none" }}>
-            <li>
-              <DashboardOutlinedIcon className="icon" />
-              <span>Module</span>
-            </li>
-          </Link>
-          
-
-          <Link to="/element" style={{ textDecoration: "none" }}>
-            <li>
-              <BookOutlinedIcon className="icon" />
-              <span>Element</span>
-            </li>
-          </Link>
-
-
           <p className="title">USER</p>
-          <li>
-            <AccountCircleOutlinedIcon className="icon" />
-            <span>Profile</span>
-          </li>
+          
           <li onClick={handleLogout}>
             <ExitToAppIcon className="icon" />
             <span>Logout</span>
           </li>
+          
         </ul>
       </div>
       <div className="bottom">
@@ -118,7 +109,7 @@ const Sidebar = () => {
           onClick={() => darkModeDispatch({ type: "DARK" })}
         ></div>
       </div>
-    </div >
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ const AdminWork = () => {
                     <Navbar />
                     <div className="datatable"> 
                     <iframe
-                        src="https://script.google.com/macros/s/AKfycbxMWaqjJZtuwKJPmCjJGFoC3pZgbgl83MCmPjSR-5_wmbPm0T16aNMXqGj7_pSCE52f6g/exec"
+                        src="https://script.google.com/macros/s/AKfycbzX875LxPMvMO9U6idrMEsKpoeD1Z9ch2ZaV5l50H7d6iyJ8CQigyftA0KMW62bmU6V/exec"
                         title="Your Google Apps Script Page"
                         width="100%"
                         height="600px"

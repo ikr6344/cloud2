@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import axios from 'axios';
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { studentColumns, userRows } from "../../datatablesource";
+import { ProfColumns } from "../../datatablesource";
 import { Link } from "react-router-dom";
 import {
     collection,
@@ -15,27 +15,11 @@ import {
     where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-const DataStudent = () => {
+const DataProf = () => {
 
     const [file, setFile] = useState(null);
-    const [filiere, setFiliere] = useState('');
-    const [studentsData, setStudentData] = useState([]);
-    const [fields, setFields] = useState([]);
+    const [profData, setProfData] = useState([]);
     const [data, setData] = useState([]);
-
-
-    useEffect(() => {
-        const fetchFields = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/filiere/');
-                setFields(response.data); // Assuming the response contains an array of field objects
-            } catch (error) {
-                console.error('Error fetching fields:', error);
-            }
-        };
-
-        fetchFields();
-    }, []);
 
     const handleFileChange = (e) => {
         const uploadedFile = e.target.files[0];
@@ -52,19 +36,19 @@ const DataStudent = () => {
 
             // Assuming the first row contains headers
             const headers = parsedData[0];
-            // Assuming each subsequent row contains student data
-            const students = parsedData.slice(1).map((row) => ({
+            // Assuming each subsequent row contains professor data
+            const profs = parsedData.slice(1).map((row) => ({
                 nom: row[0], // Assuming nom is in the first column
                 prenom: row[1], // Assuming prenom is in the second column
-                dateNaissance: row[2], // Assuming dateNaissance is in the third column
-                CIN: row[3], // Assuming CIN is in the fourth column
-                CNE: row[4], // Assuming CNE is in the fifth column
-                email: row[5], // Assuming email is in the sixth column
-                motDePasse: row[6], // Assuming motDePasse is in the seventh column
-                photo: row[7], // Assuming photo is in the eighth column
+                CIN: row[2],
+                telephone: row[3], // Assuming CIN is in the fourth column
+                photo: row[4], // Assuming photo is in the fifth column
+                specialite: row[5], // Assuming specialite is in the sixth column
+                email: row[6] // Assuming email is in the seventh column
+
             }));
 
-            setStudentData(students);
+            setProfData(profs);
         };
         reader.readAsArrayBuffer(uploadedFile);
     };
@@ -73,22 +57,25 @@ const DataStudent = () => {
         e.preventDefault();
 
         try {
-
-            const response = await axios.post('http://localhost:3000/etudiant/', {
-                filiereId: filiere,
-                students: studentsData,
-            });
-            console.log(response.data);
-
+            // Iterate through each professor and make a POST request for each one
+            for (const prof of profData) {
+                // Make a POST request to backend endpoint for each professor
+                console.log(prof);
+                const response = await axios.post('http://localhost:3000/prof/', prof);
+                console.log(response.data);
+            }
+            // Optionally display a success message after all professors are created
+            alert('Professors created successfully!');
         } catch (error) {
             console.error('Error creating professors:', error);
-
+            // Optionally display an error message
+            alert('Error creating professors. Please try again.');
         }
     };
 
 
     useEffect(() => {
-        const q = query(collection(db, "users"), where("role", "==", "etudiant"));
+        const q = query(collection(db, "users"), where("role", "==", "prof"));
         const unsub = onSnapshot(
             q,
             (snapShot) => {
@@ -110,7 +97,7 @@ const DataStudent = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/etudiant/${id}`, {
+            const response = await fetch(`http://localhost:3000/prof/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -127,16 +114,17 @@ const DataStudent = () => {
         }
     };
 
+
     const actionColumn = [
         {
             field: "action",
             headerName: "Action",
-            width: 200,
+            width: 230,
             renderCell: (params) => {
                 return (
                     <div className="cellAction">
-                        <Link to={`/students/view/${params.row.id}`} style={{ textDecoration: "none" }}>
-                            <div className="viewButton">View</div>
+                        <Link to="/users/test" style={{ textDecoration: "none" }}>
+                            <div className="viewButton">Edit</div>
                         </Link>
                         <div
                             className="deleteButton"
@@ -152,16 +140,11 @@ const DataStudent = () => {
     return (
         <div className="datatable">
             <div className="datatableTitle">
-                Add Students
+                Add Teacher
             </div>
             <div className='dtaa'>
                 <form onSubmit={handleFormSubmit}>
                     <input type="file" onChange={handleFileChange} />
-                    <select value={filiere} onChange={(e) => setFiliere(e.target.value)}>
-                        {fields.map((field) => (
-                            <option key={field.id} value={field.id}>{field.nom}</option>
-                        ))}
-                    </select>
                     <button type="submit">Upload</button>
                 </form>
             </div>
@@ -170,7 +153,7 @@ const DataStudent = () => {
             <DataGrid
                 className="datagrid"
                 rows={data}
-                columns={studentColumns.concat(actionColumn)}
+                columns={ProfColumns.concat(actionColumn)}
                 pageSize={9}
                 rowsPerPageOptions={[9]}
                 checkboxSelection
@@ -180,4 +163,4 @@ const DataStudent = () => {
     );
 };
 
-export default DataStudent;
+export default DataProf;

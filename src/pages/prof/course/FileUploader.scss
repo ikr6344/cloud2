@@ -1,22 +1,44 @@
-.file-uploader {
-    .card {
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      height: 300px;
-
-    }
+.list {
+    display: flex;
+  }
   
-    .file-upload-button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  .listContainer {
+    flex: 1;
+    margin-left: 20px; /* Ajustez cette valeur en fonction de la largeur de votre barre latérale */
+    padding: 20px;
+  }
+  
+  .widgets {
+    margin-bottom: 20px;
+  }
+  
+  .listTitle {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .editor-container {
+    margin-bottom: 20px;
+  }
+  
+  input[type="file"] {
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    background-color: teal;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
   }
   

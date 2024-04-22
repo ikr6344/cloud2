@@ -37,12 +37,22 @@ const Datatable = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteDoc(doc(db, "users", id));
-      setData(data.filter((item) => item.id !== id));
+        const response = await fetch(`http://localhost:3000/filiere/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete user');
+        }
+
+        setData(data.filter((item) => item.id !== id));
     } catch (err) {
-      console.log(err);
+        console.error(err);
     }
-  };
+};
 
   const actionColumn = [
     {
@@ -53,7 +63,7 @@ const Datatable = () => {
         return (
           <div className="cellAction">
             <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="viewButton">View</div>
+              <div className="viewButton">Edit</div>
             </Link>
             <div
               className="deleteButton"

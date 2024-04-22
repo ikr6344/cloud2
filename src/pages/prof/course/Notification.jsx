@@ -7,32 +7,30 @@ import Navbar from "../../../components/navbar/Navbar";
 import dayjs from 'dayjs';
 import ModuleDropdown from "../dashboard/chart/DropDown";
 import { Editor } from 'primereact/editor';
-import FileUploader from './FileUploader'; // Importez votre composant FileUploader ici
-import axios from 'axios'; // Importez axios pour effectuer des requêtes HTTP
-import "../profile/Profile.scss"
+import axios from 'axios';
+import "./FileUploader.scss";
+
 const Courses = () => {
-  const [value, setValue] = useState(dayjs()); // Utilisez dayjs() sans argument pour obtenir la date actuelle
+  const [value, setValue] = useState(dayjs());
   const [selectedModule, setSelectedModule] = useState(null);
-  const [text, setText] = useState(''); // Ajoutez text à l'état du composant
-  const [file, setFile] = useState(null); // Ajoutez file à l'état du composant
-  const [datedebut, setDatedebut] = useState(null); // Ajoutez datedebut à l'état du composant
-  const [dateFin, setDateFin] = useState(null); // Ajoutez dateFin à l'état du composant
+  const [text, setText] = useState('');
+  const [datedebut, setDatedebut] = useState(null);
+  const [dateFin, setDateFin] = useState(null);
+  const [file, setFile] = useState(null);
+  const [devoirs, setDevoirs] = useState([]);
 
   const handleModuleSelect = (elementModuleCode, elementModuleId) => {
     setSelectedModule({ code: elementModuleCode, id: elementModuleId });
   };
 
   const handleFileSelect = (event) => {
-    const selectedFile = event.files[0];
-    console.log("file",selectedFile) // Récupérer le premier fichier sélectionné
-    setFile(selectedFile); // Mettre à jour l'état file avec le fichier sélectionné
+    const selectedFile = event.target.files[0]; // Récupère le fichier sélectionné
+    setFile(selectedFile); // Met à jour l'état avec le fichier sélectionné
   };
-  
-  
+
   const handleCreateDevoir = () => {
     const fileName = file ? file.name : null;
 
-    // Créez un objet avec les données à envoyer à l'API
     const newDevoirData = {
       titre: text,
       datedebut,
@@ -41,18 +39,29 @@ const Courses = () => {
       elementModuleId: selectedModule.id
     };
 
-    // Envoyez les données à votre API
     axios.post('http://localhost:3000/devoir', newDevoirData)
       .then(response => {
         console.log('Devoir créé avec succès !', response.data);
-        // Réinitialisez les champs du formulaire après la création du devoir si nécessaire
         setText('');
         setFile(null);
         setDatedebut(null);
         setDateFin(null);
+        setDevoirs([...devoirs, response.data]); 
+        console.log("devoirs",devoirs)// Ajoute le nouveau devoir à la liste
       })
       .catch(error => {
         console.error('Erreur lors de la création du devoir :', error);
+      });
+  };
+
+  const handleDeleteDevoir = (devoirId) => {
+    axios.delete(`http://localhost:3000/devoir/${devoirId}`)
+      .then(response => {
+        console.log('Devoir supprimé avec succès !');
+        setDevoirs(devoirs.filter(devoir => devoir.id !== devoirId)); // Supprime le devoir de la liste
+      })
+      .catch(error => {
+        console.error('Erreur lors de la suppression du devoir :', error);
       });
   };
 
@@ -62,31 +71,32 @@ const Courses = () => {
       <div className="listContainer">
         <Navbar/>
         <div className="widgets">
-
-        <LocalizationProvider  dateAdapter={AdapterDayjs}>
-          <DateTimePicker
-            label="Uncontrolled picker"
-            defaultValue={dayjs()}
-            onChange={(newValue) => setDatedebut(newValue)}
-          />
-          <DateTimePicker
-            label="Controlled picker"
-            value={value}
-            onChange={(newValue) => setDateFin(newValue)}
-          />
-        </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              label="Date Debut"
+              defaultValue={dayjs()}
+              onChange={(newValue) => setDatedebut(newValue)}
+            />
+            <DateTimePicker
+              label="Date Fin"
+              value={value}
+              onChange={(newValue) => setDateFin(newValue)}
+            />
+          </LocalizationProvider>
         </div>
         <div className="widgets">
-
-        <ModuleDropdown onSelect={handleModuleSelect} value={selectedModule} style={{ padding: "0px", margin: "20px", display: "flex" }}/>
-        <FileUploader onFileSelect={handleFileSelect} value={file}  />
-</div>
+          <ModuleDropdown onSelect={handleModuleSelect} value={selectedModule} style={{ padding: "0px", margin: "20px", display: "flex" }}/>
+        </div>
         <div className="listTitle">Description</div>
         <Editor style={{height:'50px'}} value={text} onTextChange={(e) => setText(e.htmlValue)} />
-        <button onClick={handleCreateDevoir}>Edit</button>
+        {/* Ajoutez l'élément input pour choisir le fichier */}
+        <input type="file" onChange={handleFileSelect} />
+        <button onClick={handleCreateDevoir}>Ajouter Devoir</button>
+        {/* Affichage des devoirs ajoutés */}
+        
       </div>
     </div>
-  )
+  );
 }
 
 export default Courses;

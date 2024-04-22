@@ -38,9 +38,9 @@ const Login = () => {
         } else if (role === "prof") {
           navigate(`/profile/${id}`);
         } else if (role === "etudiant") {
-          navigate("/profile");
+          navigate(`/notes`);
         } else {
-          navigate("/dash");
+          navigate("/login");
         }
       } else {
         setError("Le rôle de l'utilisateur n'a pas été trouvé");
@@ -55,17 +55,21 @@ const Login = () => {
 
   return (
     <div style={{
-      backgroundColor: '#c9d6ff',
-      background: 'linear-gradient(to right, #e2e2e2, #c9d6ff)',
+      backgroundImage: 'url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgAGOtPzcg7mrNztuw60oiu4PoVpc3KuiwwJImZ0IfHSx5Y2ORfZ9zC7nWMEW638RM9EQiCwRN9LOEJBy_IWL-IxtHS0iVwNAQ666t1kYHJW8ahDSIzeuciJmw6zMjfOekDNdqzt7eVhsL5/s1600/Concours+d%25E2%2580%2599acc%25C3%25A8s+%25C3%25A0+la+1%25C3%25A8re+ann%25C3%25A9e+du+Cycle+Ing%25C3%25A9nieur+Ann%25C3%25A9e+Universitaire+2020-2021.png")',
+      
+      backgroundSize: '100% 100%',
+      backgroundRepeat: 'no-repeat',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
       height: '100vh'
     }}>
+
       <div className="container">
         <div className="form-container sign-in">
           <form onSubmit={handleLogin}>
+            <image  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-qrWUaeJVHZ9CfC-nwK0iYcrwAPlKUIgLNB1i21h_ag&s" alt="" />
             <h1>Welcome back</h1>
             <input
               type="email"
@@ -93,12 +97,11 @@ const Login = () => {
         <div className="toggle-container">
           <div className="toggle">
             <div className="toggle-panel toggle-right">
-              <h1>Hello, Friend!</h1>
-              <p>Register with your personal details to use all of site features</p>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

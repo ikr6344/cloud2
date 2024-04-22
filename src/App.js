@@ -7,23 +7,33 @@ import New from "./pages/new/New";
 import NewFiliere from "./pages/new/NewFiliere";
 import Filiere from "./pages/list/Filiere";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { productInputs, userInputs,filiereInputs } from "./formSource";
+import { productInputs, userInputs, filiereInputs } from "./formSource";
 import "./style/dark.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
-import AdminWork from "./pages/admin/AdminWork"
-import Prof from "./pages/prof/Prof"
-import Courses from "./pages/prof/course/Courses"
-import Profile from "./pages/prof/profile/Profile"
-import DashboardProf from './pages/prof/dashboard/Home'
-import Details  from './pages/prof/course/Details';
-import Notification from './pages/prof/course/Notification';
+import AdminWork from "./pages/admin/AdminWork";
+import Prof from "./pages/prof/Prof";
+import Profs from "./pages/list/Profs";
+import Courses from "./pages/prof/course/Courses";
+import Profile from "./pages/prof/profile/Profile";
+import DashboardProf from "./pages/prof/dashboard/Home";
+import Details from "./pages/prof/course/Details";
+import Notification from "./pages/prof/course/Notification";
+import SingleProf from "./pages/single/SingleProf";
+import Note from "./pages/list/Note";
+import Module from "./pages/list/Module";
+import NotFound from "./pages/NotFound";
+import ElementModule from "./pages/list/ElementModule";
+import Student from "./pages/student/Student";
+import Notes from "./pages/student/note/note";
+import Profile1 from "./pages/student/profile/profile";
+import DevoirsEtudiant from "./pages/student/devoir/devoir";
 function App() {
   const { darkMode } = useContext(DarkModeContext);
   const { currentUser, userId } = useContext(AuthContext); // Utilisez userId ici
 
-  console.log("id",userId)
+  console.log("id", userId);
 
   const RequireAuth = ({ children }) => {
     return currentUser ? children : <Navigate to="/login" />;
@@ -33,9 +43,14 @@ function App() {
     <div className={darkMode ? "app dark" : "app"}>
       <BrowserRouter>
         <Routes>
+        <Route path="/login" element={<Login />} />
+
           <Route path="/">
-            <Route path="login" element={<Login />} />
-            <Route
+          <Route path="/profile/:userId" element={<RequireAuth><Profile /></RequireAuth>} />
+          {/* Routes for admin */}
+          {currentUser && currentUser.role === 'admin' && (
+              <>
+               <Route
               index
               element={
                 <RequireAuth>
@@ -54,21 +69,61 @@ function App() {
                 }
               />
               <Route
-                path=":studentId"
+                path="view/:studentId"
                 element={
                   <RequireAuth>
                     <Single />
                   </RequireAuth>
                 }
               />
+              
+            </Route>
+            <Route path="module">
               <Route
-                path="newStudent"
+                index
                 element={
                   <RequireAuth>
-                    <New inputs={userInputs} title="Add New User" />
+                    <Module />
                   </RequireAuth>
                 }
               />
+             
+              
+            </Route>
+            <Route path="element">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <ElementModule />
+                  </RequireAuth>
+                }
+              />
+             
+              
+            </Route>
+            <Route path="notes">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <Note />
+                  </RequireAuth>
+                }
+              />
+              
+            </Route>
+            <Route path="profs">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <Profs />
+                  </RequireAuth>
+                }
+              />
+              
+              
             </Route>
             <Route path="fields">
               <Route
@@ -79,14 +134,7 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path=":fieldId"
-                element={
-                  <RequireAuth>
-                    <SingleFiliere />
-                  </RequireAuth>
-                }
-              />
+              
               <Route
                 path="newFiliere"
                 element={
@@ -96,43 +144,29 @@ function App() {
                 }
               />
             </Route>
-            <Route path="products">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path=":productId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <New inputs={productInputs} title="Add New Product" />
-                  </RequireAuth>
-                }
-              />
-            </Route>
-            <Route path="prof" index
-                element={
-                  <RequireAuth>
-<Prof />                  </RequireAuth>
-                } />
-            <Route path="/courses/:userId" element={
-                  <RequireAuth><Courses /></RequireAuth>} />
-            <Route path="/profile/:userId" element={<Profile />} />
-            <Route path="/dash/:userId" element={<DashboardProf />} />
-            <Route path="/notif/:userId" element={<Notification />} />
-            <Route path="/details/:elementModuleId" element={<Details />} />
+              </>
+            )}
+{currentUser && currentUser.role === 'prof' && (
+              <>
+                <Route path="prof" index element={<RequireAuth><Prof /></RequireAuth>} />
+                <Route path="/courses/:userId" element={<RequireAuth><Courses /></RequireAuth>} />
+                <Route path="/dash/:userId" element={<RequireAuth><DashboardProf /></RequireAuth>} />
+                <Route path="/notif/:userId" element={<RequireAuth><Notification /></RequireAuth>} />
+                <Route path="/details/:elementModuleId" element={<RequireAuth><Details /></RequireAuth>} />
+              </>
+            )}
+            {currentUser && currentUser.role === 'etudiant' && (
+              <>
+              <Route path="/student" element={<Student />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/profile" element={<Profile1 />} />
+              <Route path="/devoir" element={<DevoirsEtudiant/>} />
+              </>
+             )}
+
+                        <Route path="/error" element={< NotFound/>} />
+
+            <Route path="*" element={<Navigate to="/error" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
